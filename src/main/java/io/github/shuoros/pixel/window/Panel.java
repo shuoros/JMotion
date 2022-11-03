@@ -1,5 +1,7 @@
 package io.github.shuoros.pixel.window;
 
+import io.github.shuoros.pixel.io.InputController;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -13,7 +15,7 @@ public abstract class Panel extends JPanel {
 
     public abstract void update();
 
-    public abstract void input();
+    public abstract void input(InputController controller);
 
     public abstract void render(Graphics2D graphics);
 

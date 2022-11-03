@@ -5,6 +5,10 @@ import java.awt.*;
 
 public abstract class Window extends JFrame {
 
+    public Window() {
+
+    }
+
     public abstract void construct(Panel panel);
 
     public abstract String getTitle();

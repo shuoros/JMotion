@@ -1,12 +1,11 @@
 package io.github.shuoros.pixel;
 
+import io.github.shuoros.pixel.io.InputController;
 import io.github.shuoros.pixel.window.Panel;
 
-public class PixelPanel extends Panel {
+import java.awt.*;
 
-    public PixelPanel() {
-        this.dimension = App.window.getDimension();
-    }
+public class PixelPanel extends Panel {
 
     @Override
     public void input(InputController controller) {
@@ -23,7 +22,7 @@ public class PixelPanel extends Panel {
     @Override
     public void render(Graphics2D graphics) {
         graphics.setColor(Color.ORANGE);
-        graphics.fillRect(0, 0, dimension.width, dimension.height);
-
+        graphics.fillRect(0, 0, 100, 100);
     }
+
 }

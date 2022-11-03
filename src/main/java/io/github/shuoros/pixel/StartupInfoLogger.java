@@ -43,6 +43,12 @@ class StartupInfoLogger {
         }
     }
 
+    void logLoopStarted(Log applicationLog, Duration timeTakenToStartup) {
+        if (applicationLog.isInfoEnabled()) {
+            applicationLog.info(this.getLoopStartedMessage(timeTakenToStartup));
+        }
+    }
+
     private CharSequence getStartingMessage() {
         StringBuilder message = new StringBuilder();
         message.append("Starting ");
@@ -75,6 +81,16 @@ class StartupInfoLogger {
     private CharSequence getEngineStartedMessage(Duration timeTakenToStartup) {
         StringBuilder message = new StringBuilder();
         message.append("Started Pixel engine in ");
+        message.append((double) timeTakenToStartup.toMillis() / 1000.0);
+        message.append(" seconds");
+        return message;
+    }
+
+    private CharSequence getLoopStartedMessage(Duration timeTakenToStartup) {
+        StringBuilder message = new StringBuilder();
+        message.append("Started ");
+        this.appendApplicationName(message);
+        message.append(" in TOTAL ");
         message.append((double) timeTakenToStartup.toMillis() / 1000.0);
         message.append(" seconds");
 
