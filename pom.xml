@@ -4,19 +4,26 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.5</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
     <groupId>io.github.shuoros</groupId>
-    <artifactId>JPlay</artifactId>
+    <artifactId>pixel</artifactId>
     <version>0.0.1</version>
 
     <name>${project.groupId}:${project.artifactId}</name>
     <description>A Java based 2D Game Engine</description>
-    <url>https://github.com/shuoros/JPlay</url>
+    <url>https://github.com/shuoros/Pixel</url>
     <inceptionYear>2022-Nov-01</inceptionYear>
 
     <licenses>
         <license>
             <name>MIT License</name>
-            <url>https://github.com/shuoros/JPlay/blob/main/LICENSE</url>
+            <url>https://github.com/shuoros/Pixel/blob/main/LICENSE</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -30,15 +37,15 @@
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/shuoros/JPlay.git</connection>
-        <developerConnection>scm:git:ssh://github.com:shuoros/JPlay.git</developerConnection>
-        <url>http://github.com/shuoros/JPlay/tree/main</url>
+        <connection>scm:git:git://github.com/shuoros/Pixel.git</connection>
+        <developerConnection>scm:git:ssh://github.com:shuoros/Pixel.git</developerConnection>
+        <url>http://github.com/shuoros/Pixel/tree/main</url>
         <tag>v0.1.1</tag>
     </scm>
 
     <issueManagement>
         <system>GitHub</system>
-        <url>https://github.com/shuoros/JPlay/issues</url>
+        <url>https://github.com/shuoros/Pixel/issues</url>
     </issueManagement>
 
     <distributionManagement>
@@ -56,19 +63,33 @@
         <maven.compiler.source>18</maven.compiler.source>
         <maven.compiler.target>18</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <javax.annotation-api.version>1.3.2</javax.annotation-api.version>
+        <spring.version>5.3.23</spring.version>
+        <slf4j.version>2.0.3</slf4j.version>
+        <lombok.version>1.18.24</lombok.version>
+        <junit-jupiter.version>5.9.0</junit-jupiter.version>
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <maven-source-plugin.version>2.2.1</maven-source-plugin.version>
+        <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
+        <maven-gpg-plugin.version>1.5</maven-gpg-plugin.version>
+        <nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
+        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.4.0</version>
-            <scope>test</scope>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.4.0</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -78,16 +99,23 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
-                <version>2.2.1</version>
+                <version>${maven-source-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -100,7 +128,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
+                <version>${maven-javadoc-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -117,7 +145,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>1.5</version>
+                <version>${maven-gpg-plugin.version}</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -131,7 +159,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
+                <version>${nexus-staging-maven-plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>ossrh</serverId>
@@ -142,7 +170,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
+                <version>${maven-surefire-plugin.version}</version>
             </plugin>
         </plugins>
     </build>

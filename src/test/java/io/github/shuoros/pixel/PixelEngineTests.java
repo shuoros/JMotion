@@ -1,8 +1,8 @@
-package io.github.shuoros;
+package io.github.shuoros.pixel;
 
 import org.junit.jupiter.api.Test;
 
-public class MainTests {
+public class PixelEngineTests {
 
     @Test
     void contextLoads() {
