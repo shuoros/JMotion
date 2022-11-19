@@ -1,10 +1,8 @@
 package io.github.shuoros.pixel;
 
 public class SpringBootHelper {
-    public SpringBootHelper() {
-    }
 
-    Class<?> deduceMainApplicationClass() {
+    static protected Class<?> deduceMainApplicationClass() {
         try {
             StackTraceElement[] stackTrace = (new RuntimeException()).getStackTrace();
             StackTraceElement[] var2 = stackTrace;
@@ -21,4 +19,5 @@ public class SpringBootHelper {
 
         return null;
     }
+
 }

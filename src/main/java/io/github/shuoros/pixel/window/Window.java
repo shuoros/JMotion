@@ -5,13 +5,9 @@ import java.awt.*;
 
 public abstract class Window extends JFrame {
 
-    public Window() {
-
-    }
+    protected static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
     public abstract void construct(Panel panel);
-
-    public abstract String getTitle();
 
     public abstract Dimension getDimension();
 

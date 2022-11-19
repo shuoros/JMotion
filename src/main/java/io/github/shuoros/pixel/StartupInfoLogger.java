@@ -43,9 +43,9 @@ class StartupInfoLogger {
         }
     }
 
-    void logLoopStarted(Log applicationLog, Duration timeTakenToStartup) {
+    void logLoopStarting(Log applicationLog, Duration timeTakenToStartup) {
         if (applicationLog.isInfoEnabled()) {
-            applicationLog.info(this.getLoopStartedMessage(timeTakenToStartup));
+            applicationLog.info(this.getLoopStartingMessage(timeTakenToStartup));
         }
     }
 
@@ -86,7 +86,7 @@ class StartupInfoLogger {
         return message;
     }
 
-    private CharSequence getLoopStartedMessage(Duration timeTakenToStartup) {
+    private CharSequence getLoopStartingMessage(Duration timeTakenToStartup) {
         StringBuilder message = new StringBuilder();
         message.append("Started ");
         this.appendApplicationName(message);
@@ -100,6 +100,7 @@ class StartupInfoLogger {
         } catch (Throwable var5) {
         }
 
+        message.append("\n Starting the Loop...");
         return message;
     }
 

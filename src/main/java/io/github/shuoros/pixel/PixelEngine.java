@@ -1,35 +1,36 @@
 package io.github.shuoros.pixel;
 
 import io.github.shuoros.pixel.graphics.Graphic;
+import io.github.shuoros.pixel.graphics.PixelGraphic;
 import io.github.shuoros.pixel.window.Panel;
+import io.github.shuoros.pixel.window.PixelPanel;
+import io.github.shuoros.pixel.window.PixelWindow;
 import io.github.shuoros.pixel.window.Window;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.awt.*;
+import java.lang.annotation.Annotation;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class PixelEngine extends SpringApplication implements Runnable {
 
     private static final Log log = LogFactory.getLog(PixelEngine.class);
-    private static final SpringBootHelper springBootHelper = new SpringBootHelper();
     private static boolean running;
     private final String[] args;
-    private final Dimension dimension = new Dimension(100, 100);
     private boolean logStartupInfo;
     private Class<?> mainApplicationClass;
     private ConfigurableApplicationContext context;
     private FrameRate frameRate;
     private Graphic graphic;
     private Window window;
-    private Panel panel;
 
     public PixelEngine(String[] args, Class<?>... primarySources) {
         super(primarySources);
@@ -37,26 +38,18 @@ public class PixelEngine extends SpringApplication implements Runnable {
         super.setLogStartupInfo(false);
         this.logStartupInfo = true;
         this.args = args;
-        this.mainApplicationClass = springBootHelper.deduceMainApplicationClass();
+        this.mainApplicationClass = SpringBootHelper.deduceMainApplicationClass();
         this.frameRate = new FrameRate((short) 60);
-        this.graphic = new PixelGraphic(dimension);
-        this.window = new PixelWindow(this.mainApplicationClass.getName(), dimension);
-        this.panel = new PixelPanel();
-        this.panel.construct(this.window.getDimension());
-        this.window.construct(this.panel);
     }
 
     @Override
     public void run() {
         final long startTime = System.nanoTime();
-
         this.context = runSpring();
         logSpringStartupDetails(this.context, startTime);
-
         runEngine();
         logEngineStartupDetails(startTime);
-
-        logLoopStartUpDetails(startTime);
+        logLoopStartingDetails(startTime);
         loop();
     }
 
@@ -77,7 +70,7 @@ public class PixelEngine extends SpringApplication implements Runnable {
     }
 
     private void update() {
-        this.panel.update();
+        this.window.getPanel().update();
     }
 
     public void input() {
@@ -85,11 +78,11 @@ public class PixelEngine extends SpringApplication implements Runnable {
     }
 
     private void render() {
-        this.panel.render(this.graphic.get2DGraphic());
+        this.window.getPanel().render(this.graphic.get2DGraphic());
     }
 
     private void draw() {
-        Graphics g = (Graphics) this.panel.getGraphics();
+        Graphics g = (Graphics) this.window.getPanel().getGraphics();
         g.drawImage(
                 this.graphic.getBufferedImage(),
                 0,
@@ -108,7 +101,42 @@ public class PixelEngine extends SpringApplication implements Runnable {
     }
 
     private void runWindow() {
-        this.window.construct(this.panel);
+        this.window = createPixelWindowInstance();
+        if (getClassByWindowAnnotation().isPresent()) {
+            this.window = getClassByWindowAnnotation().get();
+        }
+        this.graphic = new PixelGraphic(this.window.getDimension());
+        Panel panel = new PixelPanel();
+        panel.construct(this.window.getDimension());
+        this.window.construct(panel);
+    }
+
+    private Optional<Window> getClassByWindowAnnotation() {
+        return getBeanByTypeAndAnnotation(Window.class, io.github.shuoros.pixel.Window.class);
+    }
+
+    private Optional<Panel> getClassByStartupPanelAnnotation() {
+        return getBeanByTypeAndAnnotation(Panel.class, StartupPanel.class);
+    }
+
+    private <T> Collection<T> getBeansByTypeAndAnnotation(Class<T> clazz, Class<? extends Annotation> annotationType) {
+        Map<String, T> typedBeans = this.context.getBeansOfType(clazz);
+        Map<String, Object> annotatedBeans = this.context.getBeansWithAnnotation(annotationType);
+        typedBeans.keySet().retainAll(annotatedBeans.keySet());
+        return typedBeans.values();
+    }
+
+    private <T> Optional<T> getBeanByTypeAndAnnotation(Class<T> clazz, Class<? extends Annotation> annotationType) {
+        Collection<T> beans = getBeansByTypeAndAnnotation(clazz, annotationType);
+        return beans.stream().findFirst();
+    }
+
+    private PixelWindow createPixelWindowInstance() {
+        return new PixelWindow(
+                this.context.getEnvironment().getProperty("pixel.window.title", this.mainApplicationClass.getSimpleName()),
+                this.context.getEnvironment().getProperty("pixel.window.width", "400"),
+                this.context.getEnvironment().getProperty("pixel.window.height", "400")
+        );
     }
 
     private int logFPS(int lastFPS) {
@@ -133,9 +161,9 @@ public class PixelEngine extends SpringApplication implements Runnable {
         }
     }
 
-    private void logLoopStartUpDetails(long startTime) {
+    private void logLoopStartingDetails(long startTime) {
         if (this.logStartupInfo) {
-            this.logLoopStarted(getTimeTakenToStartup(startTime));
+            this.logLoopStarting(getTimeTakenToStartup(startTime));
         }
     }
 
@@ -149,9 +177,9 @@ public class PixelEngine extends SpringApplication implements Runnable {
                 .logEngineStarted(this.getApplicationLog(), timeTakenToStartup);
     }
 
-    private void logLoopStarted(Duration timeTakenToStartup) {
+    private void logLoopStarting(Duration timeTakenToStartup) {
         (new StartupInfoLogger(this.mainApplicationClass))
-                .logLoopStarted(this.getApplicationLog(), timeTakenToStartup);
+                .logLoopStarting(this.getApplicationLog(), timeTakenToStartup);
     }
 
     private static Duration getTimeTakenToStartup(long startTime) {
