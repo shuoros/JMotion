@@ -5,7 +5,7 @@ import java.awt.*;
 
 public abstract class Window extends JFrame {
 
-    protected static final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    protected static final Rectangle SysScreen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 
     public abstract void construct(Panel panel);
 

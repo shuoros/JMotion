@@ -2,8 +2,6 @@ package io.github.shuoros.pixel.window;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 
 public class PixelWindow extends Window {
 
@@ -13,11 +11,19 @@ public class PixelWindow extends Window {
 
     private Panel panel;
 
-    public PixelWindow(String title, String width, String height) {
-        this.width = Integer.parseInt(width);
-        this.height = Integer.parseInt(height);
+    public PixelWindow(String title, boolean undecorated) {
+        this(title, undecorated, (int) SysScreen.getWidth(), (int) SysScreen.getHeight());
+    }
+
+    public PixelWindow(String title, boolean undecorated, int width, int height) {
+        this.width = width;
+        this.height = height;
         setTitle(title);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setUndecorated(undecorated);
+        if (undecorated) {
+            getRootPane().setWindowDecorationStyle(JRootPane.NONE);
+        }
     }
 
     @Override
@@ -25,19 +31,8 @@ public class PixelWindow extends Window {
         this.panel = panel;
         add(this.panel);
         pack();
-//        setUndecorated(true);
-//        getRootPane().setWindowDecorationStyle(JRootPane.NONE);
-
         setLocationRelativeTo(null);
         setResizable(false);
-//        addWindowListener(new WindowAdapter() {
-//
-//            @Override
-//            public void windowClosing(WindowEvent e) {
-//                System.out.println("hey");
-//                System.exit(0);
-//            }
-//        });
         setVisible(true);
     }
 

@@ -150,10 +150,17 @@ public class PixelEngine extends SpringApplication implements Runnable {
     }
 
     private PixelWindow createPixelWindowInstance() {
+        if (this.context.getEnvironment().getProperty("pixel.window.fullscreen", Boolean.class, false)) {
+            return new PixelWindow(
+                    this.context.getEnvironment().getProperty("pixel.window.title", this.mainApplicationClass.getSimpleName()),
+                    this.context.getEnvironment().getProperty("pixel.window.undecorated", Boolean.class, false)
+            );
+        }
         return new PixelWindow(
                 this.context.getEnvironment().getProperty("pixel.window.title", this.mainApplicationClass.getSimpleName()),
-                this.context.getEnvironment().getProperty("pixel.window.width", "400"),
-                this.context.getEnvironment().getProperty("pixel.window.height", "400")
+                this.context.getEnvironment().getProperty("pixel.window.undecorated", Boolean.class, false),
+                this.context.getEnvironment().getProperty("pixel.window.width", Integer.class, 400),
+                this.context.getEnvironment().getProperty("pixel.window.height", Integer.class, 400)
         );
     }
 
