@@ -17,6 +17,7 @@ public class PixelWindow extends Window {
         this.width = Integer.parseInt(width);
         this.height = Integer.parseInt(height);
         setTitle(title);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
     }
 
     @Override
@@ -29,14 +30,14 @@ public class PixelWindow extends Window {
 
         setLocationRelativeTo(null);
         setResizable(false);
-        addWindowListener(new WindowAdapter() {
-
-            @Override
-            public void windowClosing(WindowEvent e) {
-                System.out.println("hey");
-                System.exit(0);
-            }
-        });
+//        addWindowListener(new WindowAdapter() {
+//
+//            @Override
+//            public void windowClosing(WindowEvent e) {
+//                System.out.println("hey");
+//                System.exit(0);
+//            }
+//        });
         setVisible(true);
     }
 

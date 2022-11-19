@@ -8,7 +8,7 @@ public final class FrameRate {
     private short frameCount;
     private double period;
 
-    public FrameRate(short frequency) {
+    public FrameRate(int frequency) {
         this.period = 1000000000D / (double) frequency;
     }
 

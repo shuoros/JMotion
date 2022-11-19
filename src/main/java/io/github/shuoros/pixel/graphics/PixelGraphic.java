@@ -1,6 +1,5 @@
 package io.github.shuoros.pixel.graphics;
 
-import io.github.shuoros.pixel.graphics.Graphic;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;

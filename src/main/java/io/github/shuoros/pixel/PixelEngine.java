@@ -28,6 +28,7 @@ public class PixelEngine extends SpringApplication implements Runnable {
     private boolean logStartupInfo;
     private Class<?> mainApplicationClass;
     private ConfigurableApplicationContext context;
+    private Thread gameLoop;
     private FrameRate frameRate;
     private Graphic graphic;
     private Window window;
@@ -39,7 +40,6 @@ public class PixelEngine extends SpringApplication implements Runnable {
         this.logStartupInfo = true;
         this.args = args;
         this.mainApplicationClass = SpringBootHelper.deduceMainApplicationClass();
-        this.frameRate = new FrameRate((short) 60);
     }
 
     @Override
@@ -49,8 +49,13 @@ public class PixelEngine extends SpringApplication implements Runnable {
         logSpringStartupDetails(this.context, startTime);
         runEngine();
         logEngineStartupDetails(startTime);
-        logLoopStartingDetails(startTime);
-        loop();
+        runLoop();
+        logLoopStartedDetails(startTime);
+    }
+
+    private void runLoop() {
+        gameLoop = new Thread(() -> loop());
+        gameLoop.start();
     }
 
     private void loop() {
@@ -97,7 +102,20 @@ public class PixelEngine extends SpringApplication implements Runnable {
     }
 
     private void runEngine() {
+        setupEngine();
         runWindow();
+    }
+
+    private void setupEngine() {
+        this.frameRate = createFrameRateInstance();
+    }
+
+    private FrameRate createFrameRateInstance() {
+        return new FrameRate(
+                Integer.parseInt(
+                        this.context.getEnvironment().getProperty("pixel.engine.frame-rate", "60")
+                )
+        );
     }
 
     private void runWindow() {
@@ -161,9 +179,9 @@ public class PixelEngine extends SpringApplication implements Runnable {
         }
     }
 
-    private void logLoopStartingDetails(long startTime) {
+    private void logLoopStartedDetails(long startTime) {
         if (this.logStartupInfo) {
-            this.logLoopStarting(getTimeTakenToStartup(startTime));
+            this.logLoopStarted(getTimeTakenToStartup(startTime));
         }
     }
 
@@ -177,9 +195,9 @@ public class PixelEngine extends SpringApplication implements Runnable {
                 .logEngineStarted(this.getApplicationLog(), timeTakenToStartup);
     }
 
-    private void logLoopStarting(Duration timeTakenToStartup) {
+    private void logLoopStarted(Duration timeTakenToStartup) {
         (new StartupInfoLogger(this.mainApplicationClass))
-                .logLoopStarting(this.getApplicationLog(), timeTakenToStartup);
+                .logLoopStarted(this.getApplicationLog(), timeTakenToStartup);
     }
 
     private static Duration getTimeTakenToStartup(long startTime) {
