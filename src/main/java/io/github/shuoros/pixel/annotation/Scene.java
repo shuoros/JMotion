@@ -1,4 +1,4 @@
-package io.github.shuoros.pixel;
+package io.github.shuoros.pixel.annotation;
 
 import org.springframework.stereotype.Component;
 
@@ -9,5 +9,5 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @Component
-public @interface StartupPanel {
+public @interface Scene {
 }

@@ -3,13 +3,13 @@ package io.github.shuoros.pixel.window;
 import javax.swing.*;
 import java.awt.*;
 
-public class PixelWindow extends Window {
+public class PixelWindow extends AbstractWindow {
 
     private int width;
 
     private int height;
 
-    private Panel panel;
+    private AbstractPanel panel;
 
     public PixelWindow(String title, boolean undecorated) {
         this(title, undecorated, (int) SysScreen.getWidth(), (int) SysScreen.getHeight());
@@ -27,7 +27,7 @@ public class PixelWindow extends Window {
     }
 
     @Override
-    public void construct(Panel panel) {
+    public void construct(AbstractPanel panel) {
         this.panel = panel;
         add(this.panel);
         pack();
@@ -42,7 +42,7 @@ public class PixelWindow extends Window {
     }
 
     @Override
-    public Panel getPanel() {
+    public AbstractPanel getPanel() {
         return this.panel;
     }
 

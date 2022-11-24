@@ -1,4 +1,4 @@
-package io.github.shuoros.pixel;
+package io.github.shuoros.pixel.annotation;
 
 import org.springframework.stereotype.Component;
 

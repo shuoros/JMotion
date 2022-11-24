@@ -1,6 +1,6 @@
 package io.github.shuoros.pixel;
 
-public class SpringBootHelper {
+public final class SpringBootHelper {
 
     static protected Class<?> deduceMainApplicationClass() {
         try {

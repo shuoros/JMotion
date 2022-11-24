@@ -15,7 +15,7 @@ import java.net.InetAddress;
 import java.time.Duration;
 import java.util.concurrent.Callable;
 
-class StartupInfoLogger {
+final class StartupInfoLogger {
 
     private static final Log logger = LogFactory.getLog(StartupInfoLogger.class);
     private static final long HOST_NAME_RESOLVE_THRESHOLD = 200L;

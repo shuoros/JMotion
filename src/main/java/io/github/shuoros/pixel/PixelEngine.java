@@ -1,11 +1,13 @@
 package io.github.shuoros.pixel;
 
+import io.github.shuoros.pixel.engine.FrameRate;
+import io.github.shuoros.pixel.engine.GameStateManager;
 import io.github.shuoros.pixel.graphics.Graphic;
 import io.github.shuoros.pixel.graphics.PixelGraphic;
-import io.github.shuoros.pixel.window.Panel;
+import io.github.shuoros.pixel.window.AbstractPanel;
+import io.github.shuoros.pixel.window.AbstractWindow;
 import io.github.shuoros.pixel.window.PixelPanel;
 import io.github.shuoros.pixel.window.PixelWindow;
-import io.github.shuoros.pixel.window.Window;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
@@ -23,15 +25,15 @@ import java.util.Optional;
 public class PixelEngine extends SpringApplication implements Runnable {
 
     private static final Log log = LogFactory.getLog(PixelEngine.class);
-    private static boolean running;
     private final String[] args;
     private boolean logStartupInfo;
     private Class<?> mainApplicationClass;
     private ConfigurableApplicationContext context;
     private Thread gameLoop;
     private FrameRate frameRate;
+    private GameStateManager gameStateManager;
     private Graphic graphic;
-    private Window window;
+    private AbstractWindow window;
 
     public PixelEngine(String[] args, Class<?>... primarySources) {
         super(primarySources);
@@ -59,10 +61,10 @@ public class PixelEngine extends SpringApplication implements Runnable {
     }
 
     private void loop() {
-        this.running = true;
+        final boolean forever = true;
         frameRate.init();
         int lastFPS = 0;
-        while (running) {
+        while (forever) {
             if (frameRate.shouldRender()) {
                 update();
                 input();
@@ -83,7 +85,7 @@ public class PixelEngine extends SpringApplication implements Runnable {
     }
 
     private void render() {
-        this.window.getPanel().render(this.graphic.get2DGraphic());
+        this.window.getPanel().render(this.graphic.get2DGraphic(), gameStateManager.currentScene());
     }
 
     private void draw() {
@@ -108,6 +110,7 @@ public class PixelEngine extends SpringApplication implements Runnable {
 
     private void setupEngine() {
         this.frameRate = createFrameRateInstance();
+        this.gameStateManager = new GameStateManager();
     }
 
     private FrameRate createFrameRateInstance() {
@@ -119,22 +122,38 @@ public class PixelEngine extends SpringApplication implements Runnable {
     }
 
     private void runWindow() {
-        this.window = createPixelWindowInstance();
-        if (getClassByWindowAnnotation().isPresent()) {
-            this.window = getClassByWindowAnnotation().get();
-        }
+        this.window = getWindowInstance();
         this.graphic = new PixelGraphic(this.window.getDimension());
-        Panel panel = new PixelPanel();
+        final AbstractPanel panel = getPanelInstance();
         panel.construct(this.window.getDimension());
+
         this.window.construct(panel);
     }
 
-    private Optional<Window> getClassByWindowAnnotation() {
-        return getBeanByTypeAndAnnotation(Window.class, io.github.shuoros.pixel.Window.class);
+    private AbstractWindow getWindowInstance() {
+        if (getClassByWindowAnnotation().isPresent()) {
+            return getClassByWindowAnnotation().get();
+        }
+        return createPixelWindowInstance();
     }
 
-    private Optional<Panel> getClassByStartupPanelAnnotation() {
-        return getBeanByTypeAndAnnotation(Panel.class, StartupPanel.class);
+    private Optional<AbstractWindow> getClassByWindowAnnotation() {
+        return getBeanByTypeAndAnnotation(AbstractWindow.class, io.github.shuoros.pixel.annotation.Window.class);
+    }
+
+    private AbstractPanel getPanelInstance() {
+        if (getClassByPanelAnnotation().isPresent()) {
+            return getClassByPanelAnnotation().get();
+        }
+        return new PixelPanel(
+                this.context.getEnvironment().getProperty("pixel.panel.background-color.r", Integer.class, 240),
+                this.context.getEnvironment().getProperty("pixel.panel.background-color.g", Integer.class, 148),
+                this.context.getEnvironment().getProperty("pixel.panel.background-color.b", Integer.class, 73)
+        );
+    }
+
+    private Optional<AbstractPanel> getClassByPanelAnnotation() {
+        return getBeanByTypeAndAnnotation(AbstractPanel.class, io.github.shuoros.pixel.annotation.Panel.class);
     }
 
     private <T> Collection<T> getBeansByTypeAndAnnotation(Class<T> clazz, Class<? extends Annotation> annotationType) {

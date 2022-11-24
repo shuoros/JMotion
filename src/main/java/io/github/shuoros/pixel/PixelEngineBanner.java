@@ -8,7 +8,7 @@ import org.springframework.core.env.Environment;
 
 import java.io.PrintStream;
 
-public class PixelEngineBanner implements Banner {
+public final class PixelEngineBanner implements Banner {
 
     private static final String[] BANNER = new String[]{
             "",
